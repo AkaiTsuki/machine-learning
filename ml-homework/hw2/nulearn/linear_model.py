@@ -90,6 +90,9 @@ class Perceptron:
     def predict(self, test):
         return test.dot(self.weights)
 
+    def predict_binary(self, test):
+        return self.convert_to_binary(self.predict(test))
+
     @staticmethod
     def float_to_binary(f):
         if f > 0:
