@@ -23,6 +23,7 @@ class CsvFileReader:
             if line.strip():
                 row = [s.strip() for s in line.strip().split(delimiter) if s.strip()]
                 data.append(row)
+
         return np.array(data, converter)
 
 
@@ -44,3 +45,10 @@ def load_boston_house():
     test_target = test_data[:, test_data.shape[1] - 1]
 
     return train, train_target, test, test_target
+
+
+def load_perceptron():
+    reader = CsvFileReader('data/perceptronData.txt')
+    data =reader.read('\t', float)
+    total_col = data.shape[1]
+    return data[:, :total_col - 1], data[:, total_col - 1]
