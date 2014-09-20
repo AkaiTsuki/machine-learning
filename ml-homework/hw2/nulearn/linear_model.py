@@ -83,5 +83,39 @@ class LogisticGradientDescendingRegression(StochasticGradientDescendingRegressio
         return map(lambda v: 1 if v >= threshold else 0, vals)
 
 
+class Perceptron:
+    def __init__(self):
+        self.weights = None
+
+    def predict(self, test):
+        return test.dot(self.weights)
+
+    @staticmethod
+    def float_to_binary(f):
+        if f > 0:
+            return 1
+        else:
+            return -1
+
+    @staticmethod
+    def convert_to_binary(vals, threshold=0):
+        return map(lambda v: 1 if v >= threshold else -1, vals)
+
+    def total_error(self, predict, actual):
+        binary_predict = np.array(map(lambda v: self.float_to_binary(v), predict))
+        error = binary_predict - actual
+        return abs(error.sum())
+
+    def fit(self, train, target, alpha=0.1, max_loop=15):
+        m, n = train.shape
+        self.weights = np.zeros(n)
+        for k in range(max_loop):
+            print 'Iteration %d, total mistakes: %d' % (k + 1, self.total_error(self.predict(train), target))
+            for features, label in zip(train, target):
+                error = label - self.float_to_binary(self.predict(features))
+                self.weights += alpha * error * features
+        return self
+
+
 
 
