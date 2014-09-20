@@ -23,7 +23,7 @@ def housing():
 
     lr = StochasticGradientDescendingRegression()
     # lr = GradientDescendingRegression()
-    lr.fit(train, train_target, 0.1, 1)
+    lr.fit(train, train_target, 0.0001, 500)
 
     print '=============Train Data Result============'
     predict = lr.predict(train)
