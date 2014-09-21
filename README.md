@@ -1,6 +1,6 @@
 # machine-learning
 
-This repositary is for learning Machine Learning algorithms.
+This repository is for learning Machine Learning algorithms.
 
 ## ml-homework
 

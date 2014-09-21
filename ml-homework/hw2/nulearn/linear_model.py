@@ -2,6 +2,7 @@ __author__ = 'jiachiliu'
 
 from numpy.linalg import inv
 import numpy as np
+from nulearn.validation import mse
 import sys
 
 
@@ -38,37 +39,45 @@ class StochasticGradientDescendingRegression(LinearRegression):
     def __init__(self):
         LinearRegression.__init__(self)
 
-    def fit(self, train, target, alpha=0.0001, max_loop=130):
+    def fit(self, train, target, alpha=0.0001, max_loop=130, converge=0.001):
         m, n = train.shape
         self.weights = np.zeros(n)
         for k in range(max_loop):
-            self.print_progress(k, max_loop)
+            prev_error = mse(self.predict(train), target)
+            self.print_progress(k, prev_error)
             for t in range(m):
                 data_point = train[t]
                 error = self.predict(data_point) - target[t]
                 self.weights -= alpha * error * data_point
+            if abs(prev_error - mse(self.predict(train), target)) <= converge:
+                break
         return self
 
-    @staticmethod
-    def print_progress(cur, max_loop):
-        sys.stdout.write('\r Loop: %d of %d' % (cur + 1, max_loop))
-        sys.stdout.flush()
+    # @staticmethod
+    # def print_progress(cur, max_loop):
+    #     sys.stdout.write('\r Loop: %d of %d' % (cur + 1, max_loop))
+    #     sys.stdout.flush()
 
+    def print_progress(self, k, cost):
+        print "Iteration: %s, cost: %s" % (k+1, cost)
 
 class LogisticGradientDescendingRegression(StochasticGradientDescendingRegression):
     def __init__(self):
         LinearRegression.__init__(self)
 
-    def fit(self, train, target, alpha=0.0001, max_loop=130):
+    def fit(self, train, target, alpha=0.0001, max_loop=130, converge=0.001):
         m, n = train.shape
         self.weights = np.zeros(n)
         for k in range(max_loop):
-            self.print_progress(k, max_loop)
+            prev_error = mse(self.predict(train), target)
+            self.print_progress(k, prev_error)
             for t in xrange(m):
                 data_point = train[t]
                 predict = self.predict(data_point)
                 error = predict - target[t]
                 self.weights -= alpha * error * predict * (1.0 - predict) * data_point
+            if abs(prev_error - mse(self.predict(train), target)) <= converge:
+                break
         return self
 
     @staticmethod

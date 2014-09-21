@@ -16,6 +16,7 @@ def housing():
 
     data = np.vstack((train, test))
     normalize(data)
+
     train = data[:len(train)]
     test = data[len(train):]
     train = append_new_column(train, 1.0, 0)
@@ -98,9 +99,9 @@ def spam1():
     print "Average train mse: %f, average test mse: %f" % (1.0*train_mse / fold, 1.0*test_mse / fold)
 
 
-def spam_logistic(train, test, train_target, test_target, step, loop):
+def spam_logistic(train, test, train_target, test_target, step, loop, converge):
     cf = LogisticGradientDescendingRegression()
-    cf = cf.fit(train, train_target, step, loop)
+    cf = cf.fit(train, train_target, step, loop, converge)
     print '=============Train Data Result============'
     predict_train = cf.predict(train)
     predict_train = cf.convert_to_binary(predict_train)
@@ -120,9 +121,9 @@ def spam_logistic(train, test, train_target, test_target, step, loop):
     print 'Error rate: %f, accuracy: %f, FPR: %f, TPR: %f' % (er, acc, fpr, tpr)
 
 
-def spam_linear(train, test, train_target, test_target, step, loop):
+def spam_linear(train, test, train_target, test_target, step, loop, converge):
     cf = StochasticGradientDescendingRegression()
-    cf = cf.fit(train, train_target, step, loop)
+    cf = cf.fit(train, train_target, step, loop, converge)
     print '=============Train Data Result============'
     predict_train = cf.predict(train)
     predict_train = LogisticGradientDescendingRegression.convert_to_binary(predict_train)
@@ -142,23 +143,23 @@ def spam_linear(train, test, train_target, test_target, step, loop):
     print 'Error rate: %f, accuracy: %f, FPR: %f, TPR: %f' % (er, acc, fpr, tpr)
 
 
-def spam(step, loop):
+def spam(step, loop, converge):
     train, target = load_spambase()
     normalize(train)
     train = append_new_column(train, 1.0, 0)
 
     train, test, train_target, test_target = cross_validation.train_test_shuffle_split(train, target, len(train)/10)
     # Logistic Regression
-    spam_logistic(train, test, train_target, test_target, step, loop)
+    spam_logistic(train, test, train_target, test_target, step, loop, converge)
     # Linear Regression
-    spam_linear(train, test, train_target, test_target, step, loop)
+    spam_linear(train, test, train_target, test_target, step, loop, converge)
 
 
 def main():
     if sys.argv[1] == "housing":
         housing()
     elif sys.argv[1] == "spam":
-        spam(0.001, 100)
+        spam(0.001, 100, 0.0001)
     else:
         print "Invalid dataset please use [housing] or [spam]."
 
