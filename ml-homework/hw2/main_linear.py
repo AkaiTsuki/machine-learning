@@ -103,7 +103,7 @@ def spam1():
 def spam_decision_tree(train, test, train_target, test_target):
     cf = DecisionTree()
     cf = cf.fit(train, train_target, 5)
-    test_and_evaluate(cf, train, test, train_target, test_target, 'Spam Decision Tree')
+    test_and_evaluate(cf, train, test, train_target, test_target, 'Spam Decision Tree', False)
 
 
 def spam_logistic(train, test, train_target, test_target, step, loop, converge):
@@ -126,7 +126,7 @@ def spam_normal_equation(train, test, train_target, test_target):
     test_and_evaluate(cf, train, test, train_target, test_target, 'Spam Normal Equation')
 
 
-def test_and_evaluate(cf, train, test, train_target, test_target, title):
+def test_and_evaluate(cf, train, test, train_target, test_target, title, use_roc=True):
     print '=============Train Data Result============'
     predict_train = cf.predict(train)
     predict_train = LogisticGradientDescendingRegression.convert_to_binary(predict_train)
@@ -138,7 +138,8 @@ def test_and_evaluate(cf, train, test, train_target, test_target, title):
 
     print '=============Test Data Result============'
     predict_test = cf.predict(test)
-    roc(test_target, predict_test, title)
+    if use_roc:
+        roc(test_target, predict_test, title)
     predict_test = LogisticGradientDescendingRegression.convert_to_binary(predict_test)
     cm = confusion_matrix(test_target, predict_test)
     print "confusion matrix: TN: %s, FP: %s, FN: %s, TP: %s" % (cm[0, 0], cm[0, 1], cm[1, 0], cm[1, 1])
