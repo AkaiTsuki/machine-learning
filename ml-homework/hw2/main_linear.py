@@ -38,7 +38,7 @@ def housing():
 def spam1():
     train, target = load_spambase()
 
-    #normalize_columns = [55, 56]
+    # normalize_columns = [55, 56]
     normalize(train)
     train = append_new_column(train, 1.0, 0)
 
@@ -96,34 +96,28 @@ def spam1():
         test_mse += mse(predict_test, test_target)
 
     print "Average train acc: %f, average test acc: %f" % (train_accuracy / fold, test_accuracy / fold)
-    print "Average train mse: %f, average test mse: %f" % (1.0*train_mse / fold, 1.0*test_mse / fold)
+    print "Average train mse: %f, average test mse: %f" % (1.0 * train_mse / fold, 1.0 * test_mse / fold)
 
 
 def spam_logistic(train, test, train_target, test_target, step, loop, converge):
     cf = LogisticGradientDescendingRegression()
     cf = cf.fit(train, train_target, step, loop, converge)
-    print '=============Train Data Result============'
-    predict_train = cf.predict(train)
-    predict_train = cf.convert_to_binary(predict_train)
-
-    cm = confusion_matrix(train_target, predict_train)
-    print "confusion matrix: TN: %s, FP: %s, FN: %s, TP: %s" % (cm[0, 0], cm[0, 1], cm[1, 0], cm[1, 1])
-    er, acc, fpr, tpr = confusion_matrix_analysis(cm)
-    print 'Error rate: %f, accuracy: %f, FPR: %f, TPR: %f' % (er, acc, fpr, tpr)
-
-    print '=============Test Data Result============'
-    predict_test = cf.predict(test)
-    roc(test_target, predict_test, "ROC Logistic Regression")
-    predict_test = cf.convert_to_binary(predict_test)
-    cm = confusion_matrix(test_target, predict_test)
-    print "confusion matrix: TN: %s, FP: %s, FN: %s, TP: %s" % (cm[0, 0], cm[0, 1], cm[1, 0], cm[1, 1])
-    er, acc, fpr, tpr = confusion_matrix_analysis(cm)
-    print 'Error rate: %f, accuracy: %f, FPR: %f, TPR: %f' % (er, acc, fpr, tpr)
+    test_and_evaluate(cf, train, test, train_target, test_target)
 
 
 def spam_linear(train, test, train_target, test_target, step, loop, converge):
     cf = StochasticGradientDescendingRegression()
     cf = cf.fit(train, train_target, step, loop, converge)
+    test_and_evaluate(cf, train, test, train_target, test_target)
+
+
+def spam_normal_equation(train, test, train_target, test_target):
+    cf = LinearRegression()
+    cf = cf.fit(train, train_target)
+    test_and_evaluate(cf, train, test, train_target, test_target)
+
+
+def test_and_evaluate(cf, train, test, train_target, test_target):
     print '=============Train Data Result============'
     predict_train = cf.predict(train)
     predict_train = LogisticGradientDescendingRegression.convert_to_binary(predict_train)
@@ -148,11 +142,17 @@ def spam(step, loop, converge):
     normalize(train)
     train = append_new_column(train, 1.0, 0)
 
-    train, test, train_target, test_target = cross_validation.train_test_shuffle_split(train, target, len(train)/10)
+    train, test, train_target, test_target = cross_validation.train_test_shuffle_split(train, target, len(train) / 10)
     # Logistic Regression
+    print '\n============== Logistic Regression - Stochastic Gradient Descending==============='
     spam_logistic(train, test, train_target, test_target, step, loop, converge)
     # Linear Regression
+
+    print '\n============== Linear Regression - Stochastic Gradient Descending ==============='
     spam_linear(train, test, train_target, test_target, step, loop, converge)
+
+    print '\n============== Linear Regression - Normal Equation==============='
+    spam_normal_equation(train, test, train_target, test_target)
 
 
 def main():
