@@ -17,7 +17,6 @@ def housing():
 
     scaler = normalize(train)
     scaler.scale_test(test)
-    print test
 
     train = append_new_column(train, 1.0, 0)
     test = append_new_column(test, 1.0, 0)

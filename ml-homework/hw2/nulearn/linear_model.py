@@ -50,6 +50,7 @@ class StochasticGradientDescendingRegression(LinearRegression):
                 error = self.predict(data_point) - target[t]
                 self.weights -= alpha * error * data_point
             if abs(prev_error - mse(self.predict(train), target)) <= converge:
+                print 'weights: ', self.weights
                 break
         return self
 
@@ -100,34 +101,52 @@ class Perceptron:
     def predict(self, test):
         return test.dot(self.weights)
 
-    def predict_binary(self, test):
-        return self.convert_to_binary(self.predict(test))
-
-    @staticmethod
-    def float_to_binary(f):
-        if f > 0:
-            return 1
-        else:
-            return -1
-
-    @staticmethod
-    def convert_to_binary(vals, threshold=0):
-        return map(lambda v: 1 if v >= threshold else -1, vals)
-
-    def total_error(self, predict, actual):
-        binary_predict = np.array(map(lambda v: self.float_to_binary(v), predict))
-        error = binary_predict - actual
-        return abs(error.sum())
-
-    def fit(self, train, target, alpha=0.1, max_loop=15):
+    def fit(self, train, target):
         m, n = train.shape
         self.weights = np.zeros(n)
-        for k in range(max_loop):
-            print 'Iteration %d, total mistakes: %d' % (k + 1, self.total_error(self.predict(train), target))
+        train, target = self.flip(train, target)
+        k = 0
+        while not self.all_positive(train):
+            print 'Iteration %d, total mistakes: %d' % (k + 1, self.total_error(self.predict(train)))
             for features, label in zip(train, target):
-                error = label - self.float_to_binary(self.predict(features))
-                self.weights += alpha * error * features
-        return self
+                if self.predict(features) <= 0:
+                    self.weights += features
+            k += 1
+        print 'Iteration %d, total mistakes: %d' % (k + 1, self.total_error(self.predict(train)))
+
+    @staticmethod
+    def total_error(predict):
+        count = 0
+        for p in predict:
+            if p <= 0:
+                count += 1
+        return count
+
+    def all_positive(self, train):
+        for features in train:
+            if self.predict(features) <= 0:
+                return False
+        return True
+
+    @staticmethod
+    def flip(train, target):
+        new_train = []
+        new_target = []
+        for features, label in zip(train, target):
+            if label == -1:
+                new_train.append(-features)
+                new_target.append(-label)
+            else:
+                new_train.append(features)
+                new_target.append(label)
+        return np.array(new_train), np.array(new_target)
+
+        # for k in range(max_loop):
+        #     print 'Iteration %d, total mistakes: %d' % (k + 1, self.total_error(self.predict(train), target))
+        #     for features, label in zip(train, target):
+        #         error = label - self.float_to_binary(self.predict(features))
+        #         self.weights += alpha * error * features
+        # return self
 
 
 

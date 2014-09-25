@@ -9,7 +9,7 @@ def perceptron():
     train, target = dataset.load_perceptron()
     train = preprocessing.append_new_column(train, 1.0, 0)
     classifier = Perceptron()
-    classifier.fit(train, target, max_loop=30)
+    classifier.fit(train, target)
 
     print classifier.weights
     print classifier.weights / -classifier.weights[0]
