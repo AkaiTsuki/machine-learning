@@ -4,14 +4,20 @@ import numpy as np
 
 
 def normalize(data, columns=None):
+
     if columns is None:
-        ZeroMeanUnitVariation(range(data.shape[1])).scale(data)
+        scaler = ZeroMeanUnitVariation(range(data.shape[1]))
+        scaler.scale(data)
+        return scaler
     else:
-        ZeroMeanUnitVariation(columns).scale(data)
+        scaler = ZeroMeanUnitVariation(columns)
+        scaler.scale(data)
+        return scaler
 
 
 def append_new_column(data, values, pos):
         return np.insert(data, pos, values=values, axis=1)
+
 
 class ZeroMeanUnitVariation:
     def __init__(self, cols):
@@ -28,3 +34,8 @@ class ZeroMeanUnitVariation:
         for i in range(dataset.shape[0]):
             for c in self.cols:
                 dataset[i][c] = (dataset[i][c] - self.meta[c][0]) / self.meta[c][1]
+
+    def scale_test(self, test):
+        for i in range(test.shape[0]):
+            for c in self.cols:
+                test[i][c] = (test[i][c] - self.meta[c][0]) / self.meta[c][1]

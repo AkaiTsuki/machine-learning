@@ -15,11 +15,10 @@ import sys
 def housing():
     train, train_target, test, test_target = load_boston_house()
 
-    data = np.vstack((train, test))
-    normalize(data)
+    scaler = normalize(train)
+    scaler.scale_test(test)
+    print test
 
-    train = data[:len(train)]
-    test = data[len(train):]
     train = append_new_column(train, 1.0, 0)
     test = append_new_column(test, 1.0, 0)
 
@@ -149,14 +148,15 @@ def test_and_evaluate(cf, train, test, train_target, test_target, title, use_roc
 
 def spam(step, loop, converge):
     train, target = load_spambase()
-    normalize(train)
-    train = append_new_column(train, 1.0, 0)
 
     train, test, train_target, test_target = cross_validation.train_test_shuffle_split(train, target, len(train) / 10)
-    # Logistic Regression
+    scaler = normalize(train)
+    train = append_new_column(train, 1.0, 0)
+    scaler.scale_test(test)
+    test = append_new_column(test, 1.0, 0)
+
     print '\n============== Logistic Regression - Stochastic Gradient Descending==============='
     spam_logistic(train, test, train_target, test_target, step, loop, converge)
-    # Linear Regression
 
     print '\n============== Linear Regression - Stochastic Gradient Descending ==============='
     spam_linear(train, test, train_target, test_target, step, loop, converge)

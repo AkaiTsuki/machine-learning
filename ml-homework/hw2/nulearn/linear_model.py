@@ -59,7 +59,8 @@ class StochasticGradientDescendingRegression(LinearRegression):
     #     sys.stdout.flush()
 
     def print_progress(self, k, cost):
-        print "Iteration: %s, cost: %s" % (k+1, cost)
+        print "Iteration: %s, error: %s" % (k+1, cost)
+
 
 class LogisticGradientDescendingRegression(StochasticGradientDescendingRegression):
     def __init__(self):
