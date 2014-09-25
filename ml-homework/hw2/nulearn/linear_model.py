@@ -50,16 +50,11 @@ class StochasticGradientDescendingRegression(LinearRegression):
                 error = self.predict(data_point) - target[t]
                 self.weights -= alpha * error * data_point
             if abs(prev_error - mse(self.predict(train), target)) <= converge:
-                print 'weights: ', self.weights
                 break
         return self
 
-    # @staticmethod
-    # def print_progress(cur, max_loop):
-    #     sys.stdout.write('\r Loop: %d of %d' % (cur + 1, max_loop))
-    #     sys.stdout.flush()
-
-    def print_progress(self, k, cost):
+    @staticmethod
+    def print_progress(k, cost):
         print "Iteration: %s, error: %s" % (k+1, cost)
 
 
@@ -140,14 +135,3 @@ class Perceptron:
                 new_train.append(features)
                 new_target.append(label)
         return np.array(new_train), np.array(new_target)
-
-        # for k in range(max_loop):
-        #     print 'Iteration %d, total mistakes: %d' % (k + 1, self.total_error(self.predict(train), target))
-        #     for features, label in zip(train, target):
-        #         error = label - self.float_to_binary(self.predict(features))
-        #         self.weights += alpha * error * features
-        # return self
-
-
-
-
