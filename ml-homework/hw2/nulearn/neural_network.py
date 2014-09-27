@@ -19,13 +19,13 @@ class NeuralNetwork:
     def init_weights(self, layers):
         weights = []
         for l in range(1, len(layers)):
-            weights.append(2 * np.random.random((layers[l - 1], layers[l])) * 0.25)
+            weights.append(0.5 * np.random.random((layers[l - 1], layers[l])))
         return weights
 
     def init_bias(self, layers):
         bias = []
         for l in range(1, len(layers)):
-            bias.append(2 * np.random.random(layers[l]) * 0.25)
+            bias.append(0.5 * np.random.random(layers[l]))
         return bias
 
     @staticmethod
@@ -66,7 +66,7 @@ class NeuralNetwork:
                 m, n = weights.shape
                 # the outputs for all unit in layer l
                 output = []
-                # for each unit in layer l+1
+                # for each unit in layer
                 for u in range(n):
                     bias = self.bias[l][u]
                     # unit input

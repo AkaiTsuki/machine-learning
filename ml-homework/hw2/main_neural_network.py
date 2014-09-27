@@ -5,16 +5,6 @@ from nulearn.neural_network import NeuralNetwork
 from nulearn.preprocessing import append_new_column
 
 
-def main1():
-    layers = [3, 2, 1]
-    train = np.array([[1, 0, 1]])
-    train = append_new_column(train, 1, 0)
-    target = np.array([1])
-
-    nn = NeuralNetwork(layers)
-    nn.fit(train, target)
-
-
 def main():
     layers = [8, 3, 8]
     train = np.array([[1, 0, 0, 0, 0, 0, 0, 0],
