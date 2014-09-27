@@ -4,29 +4,6 @@ import numpy as np
 import sys
 
 
-class Unit:
-    def __init__(self, weights_count):
-        # A list of weights that come in to the unit
-        self.weights = np.zeros(weights_count)
-        # the bias of unit
-        self.bias = 0.0
-
-    @staticmethod
-    def weighted_sum(w, x):
-        return np.dot(x, w)
-
-    @staticmethod
-    def logistic(x):
-        return 1.0 / (1 + np.exp(-x))
-
-    @staticmethod
-    def logistic_derivative(x):
-        return Unit.logistic(x) * (1 - Unit.logistic(x))
-
-    def __str__(self):
-        return '(weights: ' + str(self.weights) + ' bias: ' + str(self.bias) + ')'
-
-
 class NeuralNetwork:
     def __init__(self, layers):
         # a list contains number of units in each layer
@@ -130,11 +107,3 @@ class NeuralNetwork:
             for l in range(len(self.bias)):
                 for m in range(len(self.bias[l])):
                     self.bias[l][m] += rate * errors[l][m]
-
-
-
-
-
-
-
-
