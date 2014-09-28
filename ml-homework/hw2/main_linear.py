@@ -25,6 +25,29 @@ def housing():
     # lr = GradientDescendingRegression()
     lr.fit(train, train_target, 0.0001, 500)
 
+    print '---------------Stochastic Gradient----------'
+    print '=============Train Data Result============'
+    predict = lr.predict(train)
+    print "mse: ", mse(predict, train_target), " rmse: ", rmse(predict, train_target), " mae: ", mae(predict,
+                                                                                                     train_target)
+    print '=============Test Data Result============'
+    predict = lr.predict(test)
+    print "mse: ", mse(predict, test_target), " rmse: ", rmse(predict, test_target), " mae: ", mae(predict, test_target)
+
+    print '------------- Normal Equation--------------'
+    lr = LinearRegression()
+    lr.fit(train, train_target)
+    print '=============Train Data Result============'
+    predict = lr.predict(train)
+    print "mse: ", mse(predict, train_target), " rmse: ", rmse(predict, train_target), " mae: ", mae(predict,
+                                                                                                     train_target)
+    print '=============Test Data Result============'
+    predict = lr.predict(test)
+    print "mse: ", mse(predict, test_target), " rmse: ", rmse(predict, test_target), " mae: ", mae(predict, test_target)
+
+    print '---------------Regression Tree-----------'
+    lr = RegressionTree()
+    lr.fit(train, train_target, 2, 0)
     print '=============Train Data Result============'
     predict = lr.predict(train)
     print "mse: ", mse(predict, train_target), " rmse: ", rmse(predict, train_target), " mae: ", mae(predict,
