@@ -102,10 +102,12 @@ class Perceptron:
         train, target = self.flip(train, target)
         k = 0
         while not self.all_positive(train):
-            print 'Iteration %d, total mistakes: %d' % (k + 1, self.total_error(self.predict(train)))
+            count = 0
             for features, label in zip(train, target):
                 if self.predict(features) <= 0:
+                    count += 1
                     self.weights += features
+            print 'Iteration %d, total mistakes: %d' % (k + 1, count)
             k += 1
         print 'Iteration %d, total mistakes: %d' % (k + 1, self.total_error(self.predict(train)))
 
