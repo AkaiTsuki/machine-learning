@@ -11,6 +11,11 @@ def train_test_shuffle_split(data, target, test_size):
     return data[training_idx, :], data[test_idx, :], target[training_idx, :], target[test_idx, :]
 
 
+def shuffle(train, target):
+    indices = np.random.permutation(train.shape[0])
+    return train[indices], target[indices]
+
+
 def k_fold_cross_validation(length, n):
     block_size = length / n
 
