@@ -48,6 +48,8 @@ def get_classifier(c):
         return BernoulliNaiveBayes()
     if c == 'gaussian':
         return GaussianNaiveBayes()
+    if c == 'histogram':
+        return HistogramNaiveBayes()
 
 
 def gaussian_naive_bayes():
@@ -56,6 +58,10 @@ def gaussian_naive_bayes():
 
 def bernoulli_naive_bayes():
     naive_bayes('bernoulli')
+
+
+def histogram_naive_bayes():
+    naive_bayes('histogram')
 
 
 def gaussian_naive_bayes1():
@@ -70,4 +76,5 @@ def gaussian_naive_bayes1():
 
 if __name__ == '__main__':
     # bernoulli_naive_bayes()
-    gaussian_naive_bayes()
+    # gaussian_naive_bayes()
+    histogram_naive_bayes()
