@@ -114,18 +114,18 @@ class GaussianNaiveBayes:
         for t in test:
             res = []
             for l in self.labels:
-                liklihood = 1.0
+                log_liklihood = 0.0
                 for f in range(test.shape[1]):
-                    #print "index, feature, mean, var: %s %s %s %s" % (f, t[f],self.get_class_conditional_mean(l, f), self.get_class_conditional_var(l, f))
-                    g = self.gaussian(t[f], self.get_class_conditional_mean(l, f), self.get_class_conditional_var(l, f))
-                    liklihood *= g
-                res.append(liklihood * self.priors[l])
+                    # print "index, feature, mean, var: %s %s %s %s" % (f, t[f],self.get_class_conditional_mean(l, f), self.get_class_conditional_var(l, f))
+                    g = self.gaussian_on_ln(t[f], self.get_class_conditional_mean(l, f), self.get_class_conditional_var(l, f))
+                    log_liklihood += g
+                res.append(log_liklihood + np.log(self.priors[l]))
             predicts.append(res)
         return predicts
 
     def predict_class(self, test):
         predicts = self.predict(test)
-        #print predicts
+        # print predicts
         return np.array(map(lambda p: 1.0 if p[0] <= p[1] else 0.0, predicts))
 
     @staticmethod
@@ -134,6 +134,12 @@ class GaussianNaiveBayes:
         v1 = np.exp(-v2)
         v3 = v1 / np.sqrt(2.0 * v * np.pi)
         return v3
+
+    @staticmethod
+    def gaussian_on_ln(f, m, v):
+        v1 = np.log(1.0 / np.sqrt(2.0 * v * np.pi))
+        v2 = -((f - m) * (f - m)) / (2.0 * v)
+        return v1 + v2
 
     def get_class_conditional_mean(self, label, feature):
         return self.conditional_mean[label][feature]
