@@ -184,7 +184,8 @@ class HistogramNaiveBayes:
                 bin_likelihoods.append(1.0 * c / (label_count + possible_value_count))
             self.likelihoods[label].append(bin_likelihoods)
 
-    def get_bin_index(self, val, bin):
+    @staticmethod
+    def get_bin_index(val, bin):
         for i in range(len(bin) - 1):
             if i == 0 and bin[i] == val:
                 return i
@@ -222,10 +223,10 @@ class HistogramNaiveBayes:
             res = []
             for l in self.labels:
                 likelihoods = self.likelihoods[l]
-                posterior = 1.0
+                likelihood = 1.0
                 for f in range(test.shape[1]):
-                    posterior *= likelihoods[f][self.get_bin_index(t[f], self.bins[f])]
-                res.append(posterior * self.priors[l])
+                    likelihood *= likelihoods[f][self.get_bin_index(t[f], self.bins[f])]
+                res.append(likelihood * self.priors[l])
             predicts.append(res)
 
         return predicts
