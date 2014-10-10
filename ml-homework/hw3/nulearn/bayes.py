@@ -48,18 +48,16 @@ class GaussianNaiveBayes:
             for l in self.labels:
                 log_liklihood = 0.0
                 for f in range(test.shape[1]):
-                    # print "index, feature, mean, var: %s %s %s %s" % (f, t[f],self.get_class_conditional_mean(l, f), self.get_class_conditional_var(l, f))
                     g = self.gaussian_on_ln(t[f], self.get_class_conditional_mean(l, f),
                                             self.get_class_conditional_var(l, f))
                     log_liklihood += g
                 res.append(log_liklihood + np.log(self.priors[l]))
-            predicts.append(res)
+            predicts.append(res[1] - res[0])
         return predicts
 
-    def predict_class(self, test):
-        predicts = self.predict(test)
+    def predict_class(self, predicts):
         # print predicts
-        return np.array(map(lambda p: 1.0 if p[0] <= p[1] else 0.0, predicts))
+        return np.array(map(lambda p: 1.0 if p > 0 else 0.0, predicts))
 
     @staticmethod
     def gaussian(f, m, v):
@@ -159,13 +157,12 @@ class HistogramNaiveBayes:
                 for f in range(test.shape[1]):
                     likelihood *= likelihoods[f][self.get_bin_index(t[f], self.bins[f])]
                 res.append(likelihood * self.priors[l])
-            predicts.append(res)
+            predicts.append(np.log(res[1] / res[0]))
 
         return predicts
 
-    def predict_class(self, test):
-        predicts = self.predict(test)
-        return np.array(map(lambda p: 1.0 if p[0] <= p[1] else 0.0, predicts))
+    def predict_class(self, predicts):
+        return np.array(map(lambda p: 1.0 if p > 0 else 0.0, predicts))
 
     @staticmethod
     def get_mean_vector(data):
@@ -194,5 +191,29 @@ class BernoulliNaiveBayes(HistogramNaiveBayes):
             bin = sorted(bin)
             self.bins.append(bin)
 
-        print self.bins
 
+class NBinsHistogramNaiveBayes(HistogramNaiveBayes):
+    def __init__(self, N):
+        HistogramNaiveBayes.__init__(self)
+        self.N = N
+
+    def setup_bins(self, train, target):
+        spams = train[target == 1]
+        non_spams = train[target == 0]
+        self.priors[1] = 1.0 * len(spams) / len(train)
+        self.priors[0] = 1.0 * len(non_spams) / len(train)
+
+        min_val_vector = [train[:, f].min() for f in range(train.shape[1])]
+        max_val_vector = [train[:, f].max() for f in range(train.shape[1])]
+
+        for f in range(train.shape[1]):
+            min_value = min_val_vector[f]
+            max_value = max_val_vector[f]
+            gap = 1.0 * (max_value - min_value) / self.N
+            bin = [min_value]
+
+            for i in range(1, self.N):
+                bin.append(min_value + i * gap)
+
+            bin.append(max_value)
+            self.bins.append(bin)
