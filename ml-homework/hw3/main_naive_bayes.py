@@ -33,7 +33,16 @@ def naive_bayes(c):
         raw_predicts = cf.fit(k_fold_train, train_target).predict(test)
         predicts = cf.predict_class(raw_predicts)
 
-        print '=============Fold %s==================' % fold
+        raw_train_predicts = cf.predict(k_fold_train)
+        train_predicts = cf.predict_class(raw_train_predicts)
+        print '=============Fold %s Train==================' % fold
+        cm = confusion_matrix(train_target, train_predicts)
+        print "confusion matrix: TN: %s, FP: %s, FN: %s, TP: %s" % (cm[0, 0], cm[0, 1], cm[1, 0], cm[1, 1])
+        er, acc, fpr, tpr = confusion_matrix_analysis(cm)
+        print 'Error rate: %f, accuracy: %f, FPR: %f, TPR: %f' % (er, acc, fpr, tpr)
+
+
+        print '=============Fold %s Test==================' % fold
         cm = confusion_matrix(test_target, predicts)
         print "confusion matrix: TN: %s, FP: %s, FN: %s, TP: %s" % (cm[0, 0], cm[0, 1], cm[1, 0], cm[1, 1])
         er, acc, fpr, tpr = confusion_matrix_analysis(cm)
