@@ -4,7 +4,9 @@ from nulearn.dataset import load_spambase
 from nulearn.bayes import *
 from nulearn.cross_validation import *
 from nulearn.validation import *
+import matplotlib.pyplot as plt
 
+roc_data = []
 
 def naive_bayes(c):
     train, target = load_spambase()
@@ -43,6 +45,9 @@ def naive_bayes(c):
         auc = roc.auc()
         print 'AUC: %s' % auc
 
+        if fold == 1:
+            roc_data.append(roc.points)
+
         overall_acc += acc
         overall_error += er
         overall_auc += auc
@@ -59,7 +64,13 @@ def get_classifier(c):
         return GaussianNaiveBayes()
     if c == 'histogram':
         return HistogramNaiveBayes()
+    if c == 'GDA':
+        return GDA()
     return NBinsHistogramNaiveBayes(c)
+
+
+def gda():
+    naive_bayes('GDA')
 
 
 def gaussian_naive_bayes():
@@ -88,8 +99,23 @@ def gaussian_naive_bayes1():
     er, acc, fpr, tpr = confusion_matrix_analysis(cm)
     print 'Error rate: %f, accuracy: %f, FPR: %f, TPR: %f' % (er, acc, fpr, tpr)
 
+
+def plot():
+    for points, m, c in zip(roc_data,'oooo', 'rgby'):
+        x = points[:, 1]
+        y = points[:, 0]
+        plt.xlabel('FPR')
+        plt.ylabel('TPR')
+        plt.xlim(xmin=0)
+        plt.ylim(ymin=0)
+        plt.scatter(x, y, marker=m, c=c)
+    plt.show()
+
 if __name__ == '__main__':
-    # bernoulli_naive_bayes()
-    # gaussian_naive_bayes()
-    # histogram_naive_bayes()
+    bernoulli_naive_bayes()
+    gaussian_naive_bayes()
+    histogram_naive_bayes()
     n_bins_histogram_naive_bayes()
+    # gda()
+    plot()
+

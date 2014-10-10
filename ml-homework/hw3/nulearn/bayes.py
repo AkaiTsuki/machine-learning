@@ -1,6 +1,44 @@
 __author__ = 'jiachiliu'
 
 import numpy as np
+from numpy.linalg import det
+from numpy.linalg import inv
+
+
+class GDA:
+    def __init__(self):
+        self.cov = None
+        self.mean = {}
+        self.priors = {}
+        self.labels = None
+        self.N = 0
+
+    def fit(self, train, target):
+        self.cov = np.cov(train, rowvar=0)
+        self.labels = np.unique(target)
+        self.N = len(train)
+        for l in self.labels:
+            tuples = train[target == l]
+            self.mean[l] = np.array([tuples[:, f].mean() for f in range(tuples.shape[1])])
+            self.priors[l] = 1.0 * len(target[target == l]) / self.N
+
+        return self
+
+    def predict(self, test):
+        predicts = []
+
+        for t in test:
+            res = []
+            for l in self.labels:
+                likelihood = -0.5 * (t - self.mean[l]).T.dot(inv(self.cov)).dot(t - self.mean[l])
+                res.append(likelihood + np.log(self.priors[l]))
+            predicts.append(res[1] - res[0])
+        return predicts
+
+    @staticmethod
+    def predict_class(predicts):
+        # print predicts
+        return np.array(map(lambda p: 1.0 if p > 0 else 0.0, predicts))
 
 
 class GaussianNaiveBayes:
