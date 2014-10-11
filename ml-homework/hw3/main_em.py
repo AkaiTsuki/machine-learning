@@ -11,16 +11,30 @@ def em(data, K, max_iter=40):
     m, n = data.shape
     pi = np.array([1.0 / K] * K)
     mu = np.random.rand(K, n)
-    sigma = [np.cov(data, rowvar=0)] * K
+    # sigma = [np.cov(data, rowvar=0)] * K
+    sigma = [np.identity(n)] * K
     gamma = np.zeros((K, m))
     count = 0
+
+    # pi = np.array([0.3206959273694992, 0.45357304148330913, 0.22573103114719137])
+    # mu = np.array([[6.95145515, 4.2786734], [4.93326615, 7.06691818], [3.27472168, 3.19007281]])
+    # sigma = [
+    #     np.array([[1.05843789, 0.20623345],  # covariance 1
+    #               [0.20623345, 1.33288348]]),
+    #     np.array([[0.97443921, 0.25982045],  # covariance 2
+    #               [0.25982045, 0.94619833]]),
+    #     np.array([[1.44474827, 0.33745813],  # covariance 3
+    #               [0.33745813, 3.69796638]])
+    # ]
+
     while count < max_iter:
         # E step
         print '==============iteration %s =================' % (count + 1)
-        for k in range(K):
-            for p in range(m):
-                gamma[k][p] = pi[k] * gaussian(data[p], n, mu[k], sigma[k]) / gaussians(data[p], n, mu, sigma, pi)
-
+        for p in range(m):
+            gaussian_vector = gaussians(data[p], n, mu, sigma, pi)
+            s = sum(gaussian_vector)
+            for k in range(K):
+                gamma[k][p] = gaussian_vector[k] / s
         print 'gamma : %s' % gamma
 
         # M step
@@ -38,41 +52,18 @@ def em(data, K, max_iter=40):
             # update pi
             pi[k] = sum_gamma_k / m
 
-        print 'mean : %s' % mu
+        print 'mean : %s' % mu.tolist()
         print 'sigma : %s' % sigma
-        print 'pi : %s' % pi
+        print 'pi : %s' % pi.tolist()
         print ' '
         count += 1
-
-
-    n1_data = []
-    n2_data = []
-    n1_gamma = []
-    n2_gamma = []
-    for p in range(m):
-        if gamma[0][p] > gamma[1][p]:
-            n1_data.append(data[p])
-            n1_gamma.append(gamma[0][p])
-        else:
-            n2_data.append(data[p])
-            n2_gamma.append(gamma[1][p])
-    print 'n1=%s, n2=%s' % (len(n1_data), len(n2_data))
-    n1_data = np.array(n1_data)
-    n2_data = np.array(n2_data)
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(n1_data[:, 0], n1_data[:, 1], n1_gamma, marker='o', c='g')
-    ax.scatter(n2_data[:, 0], n2_data[:, 1], n2_gamma, marker='o', c='b')
-    # plt.scatter(n1_data[:, 0], n1_data[:, 1], marker='o', c='g')
-    # plt.scatter(n2_data[:, 0], n2_data[:, 1], marker='o', c='b')
-    plt.show()
+    return gamma
 
 
 def gaussians(x, n, mu, sigma, pi):
-    s = 0
+    s = []
     for k in range(len(mu)):
-        s += pi[k] * gaussian(x, n, mu[k], sigma[k])
+        s.append(pi[k] * gaussian(x, n, mu[k], sigma[k]))
     return s
 
 
@@ -83,11 +74,36 @@ def gaussian(x, n, mu, sigma):
     return v
 
 
-if __name__ == '__main__':
+def plot(gamma, data):
+    m = len(data)
+    data_splits = {}
+    gamma_splits = {}
+
+    for p in range(m):
+        inx = np.argmax(gamma[:, p])
+        if inx not in data_splits:
+            data_splits[inx] = []
+            gamma_splits[inx] = []
+        data_splits[inx].append(data[p])
+        gamma_splits[inx].append(gamma[inx])
+
+    colors = ['r', 'g', 'b']
+
+    for k, sub_data in data_splits.items():
+        print 'n%s = %s' % (k, len(sub_data))
+        split = np.array(sub_data)
+        plt.scatter(split[:, 0], split[:, 1], marker='o', c=colors[k])
+    plt.show()
+
+
+def gaussian_3():
+    gaussian3 = load_3gaussian()
+    plot(em(gaussian3, 3), gaussian3)
+
+
+def gaussian_2():
     gaussian2 = load_2gaussian()
-    # gaussian3 = load_3gaussian()
+    plot(em(gaussian2, 2), gaussian2)
 
-    # plt.scatter(gaussian2[:, 0], gaussian2[:, 1])
-    # plt.show()
-
-    em(gaussian2, 2)
+if __name__ == '__main__':
+    gaussian_3()
