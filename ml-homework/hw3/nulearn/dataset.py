@@ -52,3 +52,15 @@ def load_perceptron():
     data =reader.read('\t', float)
     total_col = data.shape[1]
     return data[:, :total_col - 1], data[:, total_col - 1]
+
+
+def load_2gaussian():
+    reader = CsvFileReader('data/2gaussian.txt')
+    data = reader.read(' ', float)
+    return data
+
+
+def load_3gaussian():
+    reader = CsvFileReader('data/3gaussian.txt')
+    data = reader.read(' ', float)
+    return data
