@@ -218,15 +218,11 @@ class BernoulliNaiveBayes(HistogramNaiveBayes):
         self.priors[1] = 1.0 * len(spams) / len(train)
         self.priors[0] = 1.0 * len(non_spams) / len(train)
 
-        min_val_vector = [train[:, f].min() for f in range(train.shape[1])]
-        max_val_vector = [train[:, f].max() for f in range(train.shape[1])]
-
         for f in range(train.shape[1]):
-            min_value = min_val_vector[f]
-            max_value = max_val_vector[f]
+            min_value = float('-inf')
+            max_value = float('inf')
             mean_value = self.overall_mean[f]
-            bin = [min_value, max_value, mean_value]
-            bin = sorted(bin)
+            bin = [min_value, mean_value, max_value]
             self.bins.append(bin)
 
 
