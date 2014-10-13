@@ -51,4 +51,4 @@ class KMeans:
         for k in range(K):
             m = np.random.rand(n)
             means.append(m)
-        return means
+        return np.array(means)
