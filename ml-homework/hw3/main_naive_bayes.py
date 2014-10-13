@@ -122,10 +122,10 @@ def plot():
     plt.show()
 
 if __name__ == '__main__':
-    bernoulli_naive_bayes()
-    gaussian_naive_bayes()
-    histogram_naive_bayes()
-    n_bins_histogram_naive_bayes()
-    # gda()
-    plot()
+    # bernoulli_naive_bayes()
+    # gaussian_naive_bayes()
+    # histogram_naive_bayes()
+    # n_bins_histogram_naive_bayes()
+    gda()
+    # plot()
 

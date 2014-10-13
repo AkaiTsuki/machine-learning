@@ -7,7 +7,7 @@ from numpy.linalg import det, inv
 from mpl_toolkits.mplot3d import Axes3D
 
 
-def em(data, K, max_iter=40):
+def em(data, K, max_iter=40, converged=0.01):
     m, n = data.shape
     pi = np.array([1.0 / K] * K)
     mu = np.random.rand(K, n)
@@ -26,7 +26,7 @@ def em(data, K, max_iter=40):
     #     np.array([[1.44474827, 0.33745813],  # covariance 3
     #               [0.33745813, 3.69796638]])
     # ]
-
+    prev_likelihood = 0
     while count < max_iter:
         # E step
         print '==============iteration %s =================' % (count + 1)
@@ -52,12 +52,28 @@ def em(data, K, max_iter=40):
             # update pi
             pi[k] = sum_gamma_k / m
 
+        current_likelihood = max_likelihood(data, gamma, mu, sigma, pi)
         print 'mean : %s' % mu.tolist()
         print 'sigma : %s' % sigma
         print 'pi : %s' % pi.tolist()
+        print 'current max likelihood: %s' % current_likelihood
         print ' '
         count += 1
+        if abs(current_likelihood - prev_likelihood) <= converged:
+            break
+        else:
+            prev_likelihood = current_likelihood
+
     return gamma
+
+
+def max_likelihood(data, gamma, mu, sigma, pi):
+    likelihood = 0
+    n = data.shape[1]
+    for i in range(len(data)):
+        k = np.argmax(gamma[:, i])
+        likelihood += np.log(gaussian(data[i], n, mu[k],sigma[k])) + np.log(pi[k])
+    return likelihood
 
 
 def gaussians(x, n, mu, sigma, pi):
@@ -98,7 +114,7 @@ def plot(gamma, data):
 
 def gaussian_3():
     gaussian3 = load_3gaussian()
-    plot(em(gaussian3, 3), gaussian3)
+    plot(em(gaussian3, 3, 100), gaussian3)
 
 
 def gaussian_2():
