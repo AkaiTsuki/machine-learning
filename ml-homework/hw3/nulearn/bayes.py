@@ -231,7 +231,7 @@ class NBinsHistogramNaiveBayes(HistogramNaiveBayes):
         HistogramNaiveBayes.__init__(self)
         self.N = N
 
-    def setup_bins(self, train, target):
+    def setup_bins1(self, train, target):
         spams = train[target == 1]
         non_spams = train[target == 0]
         self.priors[1] = 1.0 * len(spams) / len(train)
@@ -250,4 +250,34 @@ class NBinsHistogramNaiveBayes(HistogramNaiveBayes):
                 bin.append(min_value + i * gap)
 
             bin.append(max_value)
+            self.bins.append(bin)
+
+    def setup_bins(self, train, target):
+        spams = train[target == 1]
+        non_spams = train[target == 0]
+        self.priors[1] = 1.0 * len(spams) / len(train)
+        self.priors[0] = 1.0 * len(non_spams) / len(train)
+
+        overall_means = np.array([train[:, f].mean() for f in range(train.shape[1])])
+        overall_stds = np.array([train[:, f].std() for f in range(train.shape[1])])
+        min_val_vector = [train[:, f].min() for f in range(train.shape[1])]
+        max_val_vector = [train[:, f].max() for f in range(train.shape[1])]
+
+        for f in range(train.shape[1]):
+            mean = overall_means[f]
+            std = overall_stds[f]
+            bin = [min_val_vector[f]]
+
+            loop = (self.N/2) if self.N % 2 == 1 else self.N/2 - 1
+            lb = 0.5 if self.N % 2 == 1 else 1
+
+            if self.N % 2 == 0:
+                bin.append(mean)
+
+            for i in range(loop):
+                bin.append(mean + lb*std*(i+1))
+                bin.append(mean - lb*std*(i+1))
+
+            bin.append(max_val_vector[f])
+            bin = sorted(bin)
             self.bins.append(bin)

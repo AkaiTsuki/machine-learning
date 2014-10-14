@@ -22,6 +22,9 @@ def naive_bayes(c, on_train=False):
     overall_error = 0
     overall_auc = 0
 
+    overall_train_acc = 0
+    overall_train_error = 0
+
     for start, end in test_index_generator:
         k_fold_train = np.vstack((train[range(0, start)], train[range(end, train_size)]))
         test = train[range(start, end)]
@@ -41,6 +44,8 @@ def naive_bayes(c, on_train=False):
             print "confusion matrix: TN: %s, FP: %s, FN: %s, TP: %s" % (cm[0, 0], cm[0, 1], cm[1, 0], cm[1, 1])
             er, acc, fpr, tpr = confusion_matrix_analysis(cm)
             print 'Error rate: %f, accuracy: %f, FPR: %f, TPR: %f' % (er, acc, fpr, tpr)
+            overall_train_acc += acc
+            overall_train_error += er
 
 
         print '=============Fold %s Test==================' % fold
@@ -64,6 +69,8 @@ def naive_bayes(c, on_train=False):
         fold += 1
 
     print '--------------- Result-------------------'
+    if on_train:
+        print 'Overall Accuracy: %s, Overall Error: %s' % (overall_train_acc/k, overall_train_error/k)
     print 'Overall Accuracy: %s, Overall Error: %s, Overall AUC: %s\n' % (overall_acc/k, overall_error/k, overall_auc/k)
 
 
@@ -122,10 +129,10 @@ def plot():
     plt.show()
 
 if __name__ == '__main__':
-    # bernoulli_naive_bayes()
-    # gaussian_naive_bayes()
-    # histogram_naive_bayes()
-    # n_bins_histogram_naive_bayes()
-    gda()
-    # plot()
+    bernoulli_naive_bayes()
+    gaussian_naive_bayes()
+    histogram_naive_bayes()
+    n_bins_histogram_naive_bayes()
+    # gda()
+    plot()
 

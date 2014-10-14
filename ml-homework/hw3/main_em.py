@@ -114,7 +114,7 @@ def plot(gamma, data):
 
 def gaussian_3():
     gaussian3 = load_3gaussian()
-    plot(em(gaussian3, 3, 100), gaussian3)
+    plot(em(gaussian3, 3, 70), gaussian3)
 
 
 def gaussian_2():
@@ -122,4 +122,4 @@ def gaussian_2():
     plot(em(gaussian2, 2), gaussian2)
 
 if __name__ == '__main__':
-    gaussian_3()
+    gaussian_2()
